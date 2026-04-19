@@ -36,11 +36,9 @@ It is designed to **look and feel like a real security product**, not just a scr
 
 ---
 
-### 🚀 Guided Demo Scan
 
-![Demo](LaunchAGuided DemoScan.jpg)
 
----
+
 
 ### 📊 Dashboard
 
