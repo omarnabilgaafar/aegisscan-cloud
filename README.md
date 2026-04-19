@@ -31,13 +31,16 @@ It is designed to **look and feel like a real security product**, not just a scr
 ## 🖥️ Screenshots
 
 ### 🏠 Landing Page
-(MainPage.jpg)
+
+![Landing](MainPage.jpg)
 
 ---
 
+### 🚀 Guided Demo Scan
 
+![Demo](LaunchAGuided%20DemoScan.jpg)
 
-
+---
 
 ### 📊 Dashboard
 
@@ -53,7 +56,7 @@ It is designed to **look and feel like a real security product**, not just a scr
 
 ### 🔍 Assessment Result
 
-![Assessment](Assessment result.jpg)
+![Assessment](Assessment%20result.jpg)
 
 ---
 
@@ -189,5 +192,6 @@ Cybersecurity Student
 ## ⭐ Support
 
 If you like this project, give it a ⭐
+
 
 
