@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | AegisScan Cloud{% endblock %}
+{% block content %}
+<section class="page">
+  <div class="container">
+    <div class="dashboard-hero panel-card">
+      <div>
+        <span class="eyebrow">Security operations cockpit</span>
+        <h1>Threat monitoring dashboard</h1>
+        <p>{{ data.database_note }} This view is designed to make your project look like a product, not just a script with a table.</p>
+      </div>
+      <div class="links-row">
+        <a class="btn btn-primary" href="{{ url_for('scan.home') }}#scan-box">Start New Scan</a>
+        {% if data.latest_scan_id %}<a class="btn btn-secondary" href="{{ url_for('report.view_report', scan_id=data.latest_scan_id) }}">Open Latest Report</a>{% endif %}
+      </div>
+    </div>
+
+    <div class="stats-grid five-grid dashboard-stats">
+      <div class="stat-card"><span>Total Scans</span><strong>{{ data.total_scans }}</strong><small>stored scan sessions</small></div>
+      <div class="stat-card"><span>Total Findings</span><strong>{{ data.total_findings }}</strong><small>all vulnerabilities in database</small></div>
+      <div class="stat-card"><span>Risk Score</span><strong>{{ data.risk_score }}</strong><small>weighted by severity level</small></div>
+      <div class="stat-card"><span>Workspace Users</span><strong>{{ data.total_users }}</strong><small>accounts in authentication table</small></div>
+      <div class="stat-card"><span>Plan</span><strong>{{ data.workspace_plan }}</strong><small>{{ data.organization_name }}</small></div>
+    </div>
+
+    <div class="two-grid dashboard-grid">
+      <div class="panel-card report-hero">
+        <div class="panel-head"><h3>Severity Distribution</h3><span class="pill">monitoring live · {{ data.severity_total }}</span></div>
+        <div class="severity-bars">
+          {% for name, count in data.severity.items() %}
+          {% set total = data.severity_total if data.severity_total else 1 %}
+          <div class="sev-row">
+            <div class="sev-title">{{ name }}</div>
+            <div class="sev-track"><div class="sev-fill sev-{{ name|lower }}" style="width: {{ (count / total * 100)|round(0) }}%"></div></div>
+            <strong>{{ count }}</strong>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="report-kpis">
+          <div class="report-kpi"><span class="meta-label">API Key</span><strong>{{ data.api_key_preview }}</strong></div>
+          <div class="report-kpi"><span class="meta-label">Usage</span><strong>{{ data.usage_percent }}%</strong></div>
+          <div class="report-kpi"><span class="meta-label">Scan Limit</span><strong>{{ data.scan_limit_label }}</strong></div>
+          <div class="report-kpi"><span class="meta-label">Workspace</span><strong>{{ data.organization_name }}</strong></div>
+        </div>
+      </div>
+      <div class="panel-card">
+        <div class="panel-head"><h3>Assessment Trend</h3><span class="pill pill-cyan">last 7 days</span></div>
+        <canvas id="trendChart" class="dashboard-chart" data-labels='{{ data.trend_labels|tojson }}' data-values='{{ data.trend_values|tojson }}'></canvas>
+        {% if data.demo_mode %}<div class="alert alert-success inline-demo-alert"><strong>Demo Mode:</strong> scan caps are bypassed while preserving SaaS plan labels.</div>{% endif %}
+        <div class="usage-box">
+          <div class="panel-head"><span class="meta-label">Plan Consumption</span><strong>{{ data.workspace_scans }} / {{ data.scan_limit_label }}</strong></div>
+          <div class="usage-track"><div class="usage-fill" style="width: {{ data.usage_percent }}%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-grid">
+      <div class="panel-card chart-card">
+        <div class="panel-head"><h3>Severity Donut</h3><span class="pill">visual split</span></div>
+        <canvas id="severityChart" class="dashboard-chart" data-values='{{ [data.severity.Critical, data.severity.High, data.severity.Medium, data.severity.Low]|tojson }}' data-labels='{{ ["Critical","High","Medium","Low"]|tojson }}'></canvas>
+      </div>
+      <div class="panel-card chart-card">
+        <div class="panel-head"><h3>Issue Taxonomy</h3><span class="pill pill-cyan">top categories</span></div>
+        <canvas id="categoryChart" class="dashboard-chart" data-labels='{{ data.top_issue_types|map(attribute="vuln_type")|list|tojson }}' data-values='{{ data.top_issue_types|map(attribute="count")|list|tojson }}'></canvas>
+      </div>
+    </div>
+
+    <div class="two-grid dashboard-grid">
+      <div class="panel-card">
+        <div class="panel-head"><h3>Top Targets</h3><span class="pill">ranked activity</span></div>
+        {% if data.top_targets %}
+        <ul class="list-clean">
+          {% for item in data.top_targets %}
+          <li><span>{{ item.target_url }}</span><strong>{{ item.count }}</strong></li>
+          {% endfor %}
+        </ul>
+        {% else %}<p class="muted">No target history yet.</p>{% endif %}
+      </div>
+      <div class="panel-card">
+        <div class="panel-head"><h3>Recent Findings</h3><span class="pill">latest</span></div>
+        {% if data.recent_findings %}
+        <div class="cards-stack compact-cards">
+          {% for item in data.recent_findings %}
+          <article class="mini-entry">
+            <div class="finding-top"><h4>{{ item.vuln_type }}</h4><span class="badge badge-{{ item.severity|lower }}">{{ item.severity }}</span></div>
+            <p>{{ item.description }}</p>
+            <small>{{ item.url }}</small>
+          </article>
+          {% endfor %}
+        </div>
+        {% else %}<p class="muted">No findings yet.</p>{% endif %}
+      </div>
+    </div>
+
+    <div class="panel-card dashboard-grid">
+      <div class="panel-head"><h3>Recent Assessments</h3><span class="pill">saved reports</span></div>
+      {% if data.recent_scans %}
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>ID</th><th>Target</th><th>Findings</th><th>Action</th></tr></thead>
+          <tbody>
+            {% for scan in data.recent_scans %}
+            <tr>
+              <td>#{{ scan.id }}</td>
+              <td>{{ scan.target_url }}</td>
+              <td>{{ scan.total_findings }}</td>
+              <td><a href="{{ url_for('report.view_report', scan_id=scan.id) }}">Open Report</a></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}<p class="muted">No saved scans yet.</p>{% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>{% endblock %}

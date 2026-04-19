@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Assessment Report | AegisScan Cloud{% endblock %}
+
+{% block content %}
+
+<section class="page">
+  <div class="container">
+
+```
+{% if report %}
+
+<!-- ================= HEADER ================= -->
+<div class="report-shell">
+
+  <!-- ===== LEFT: SUMMARY ===== -->
+  <div class="report-summary-card">
+    <span class="eyebrow">Executive report</span>
+    <h1>Security assessment report</h1>
+
+    <p class="subtitle">
+      Readable, recruiter-friendly, and remediation-focused output for the latest web application assessment.
+    </p>
+
+    <div class="info-grid" style="margin-top:18px">
+      <div>
+        <span class="meta-label">Target</span>
+        <strong>{{ report.target_url }}</strong>
+      </div>
+
+      <div>
+        <span class="meta-label">Findings</span>
+        <strong>{{ report.total_findings }}</strong>
+      </div>
+
+      <div>
+        <span class="meta-label">Assessment ID</span>
+        <strong>#{{ report.id }}</strong>
+      </div>
+
+      <div>
+        <span class="meta-label">Risk Band</span>
+        <strong>{{ risk_band }}</strong>
+      </div>
+    </div>
+
+    <p class="report-note">
+      This report prioritizes exploitability, business impact, and remediation clarity so the most dangerous issues stand out immediately.
+    </p>
+
+    <!-- ===== FIXED BUTTONS ===== -->
+    <div class="pdf-actions">
+      <a class="btn btn-primary"
+         href="{{ url_for('report.download_pdf', scan_id=report.id) }}"
+         target="_blank">
+         ⎙ Export Professional PDF
+      </a>
+    </div>
+  </div>
+
+  <!-- ===== RIGHT: SCORE ===== -->
+  <div class="panel-card">
+    <div class="panel-head">
+      <h3>Overall Risk Score</h3>
+      <span class="pill pill-cyan">{{ risk_band }}</span>
+    </div>
+
+    <div class="score-ring" style="--score: {{ 100 if risk_score > 100 else risk_score }};">
+      <div class="score-ring-inner">
+        <strong>{{ risk_score }}</strong>
+        <span>{{ risk_band }}</span>
+      </div>
+    </div>
+
+    <div class="detail-grid">
+      <div><span class="meta-label">Critical</span><strong>{{ severity_count.Critical }}</strong></div>
+      <div><span class="meta-label">High</span><strong>{{ severity_count.High }}</strong></div>
+      <div><span class="meta-label">Medium</span><strong>{{ severity_count.Medium }}</strong></div>
+    </div>
+
+    <div class="detail-grid">
+      <div><span class="meta-label">Low</span><strong>{{ severity_count.Low }}</strong></div>
+      <div><span class="meta-label">Top Category</span>
+        <strong>{{ top_types[0][0] if top_types else 'N/A' }}</strong>
+      </div>
+      <div><span class="meta-label">PDF Ready</span><strong>Yes</strong></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ================= EXEC SUMMARY ================= -->
+<div class="executive-grid">
+
+  <div class="panel-card">
+    <div class="panel-head">
+      <h3>Executive Summary</h3>
+      <span class="pill">clear language</span>
+    </div>
+
+    <p>
+      The scan identified a mix of high-priority flaws and weaker control gaps.
+      Immediate focus should go to exploitable findings such as injection or authentication weaknesses,
+      followed by hardening issues like missing headers and information disclosure.
+    </p>
+
+    <div class="detail-grid">
+      <div><span class="meta-label">Immediate Action</span><strong>Patch critical / high findings first</strong></div>
+      <div><span class="meta-label">Owner Suggestion</span><strong>AppSec + backend engineering</strong></div>
+      <div><span class="meta-label">Retest</span><strong>After remediation sprint</strong></div>
+    </div>
+  </div>
+
+  <!-- ===== PDF PREVIEW ===== -->
+  <div class="pdf-preview">
+    <div class="pdf-brand">AegisScan Cloud</div>
+    <div class="pdf-headline">PDF preview</div>
+
+    <div class="pdf-box">
+      <h4>Severity snapshot</h4>
+      <table class="pdf-mini-table">
+        <tr>
+          <th>Critical</th>
+          <th>High</th>
+          <th>Medium</th>
+          <th>Low</th>
+        </tr>
+        <tr>
+          <td>{{ severity_count.Critical }}</td>
+          <td>{{ severity_count.High }}</td>
+          <td>{{ severity_count.Medium }}</td>
+          <td>{{ severity_count.Low }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="pdf-box">
+      <h4>Top categories</h4>
+      <ul>
+        {% for name, count in top_types %}
+          <li>{{ name }} — {{ count }}</li>
+        {% else %}
+          <li>No repeated categories detected.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- ================= FINDINGS ================= -->
+<div class="panel-card dashboard-grid">
+
+  <div class="panel-head">
+    <h3>Findings & remediation</h3>
+    <span class="pill pill-cyan">actionable detail</span>
+  </div>
+
+  <div class="cards-stack">
+
+    {% for item in findings %}
+    <article class="finding-card severity-{{ item.severity | lower }}">
+
+      <div class="finding-top">
+        <h3>{{ item.vuln_type or item.type }}</h3>
+        <span class="badge badge-{{ item.severity | lower }}">{{ item.severity }}</span>
+      </div>
+
+      <p><strong>URL:</strong> {{ item.url }}</p>
+      <p>{{ item.description }}</p>
+
+      <div class="detail-grid">
+        <div><span class="meta-label">Business Impact</span><strong>{{ item.business_impact }}</strong></div>
+        <div><span class="meta-label">Recommendation</span><strong>{{ item.recommendation }}</strong></div>
+        <div><span class="meta-label">Confidence</span><strong>{{ item.confidence }}</strong></div>
+      </div>
+
+    </article>
+    {% endfor %}
+
+  </div>
+</div>
+
+{% else %}
+  <div class="alert alert-error">Report not found.</div>
+{% endif %}
+```
+
+  </div>
+</section>
+{% endblock %}

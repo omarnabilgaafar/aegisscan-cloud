@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}AegisScan Cloud | Security SaaS Demo{% endblock %}
+{% block content %}
+<section class="page page-hero landing-hero">
+    <div class="container">
+        <div class="hero-grid landing-grid">
+            <div>
+                <span class="eyebrow">Burp-inspired · Recruiter-ready · Demo-safe</span>
+                <h1 class="hero-title">Show a real security product story, not just a scanner script.</h1>
+                <p class="hero-copy">AegisScan Cloud turns your web security demo into a polished SaaS experience with guided demo targets, readable findings, executive PDF reporting, and a dashboard built to impress in a portfolio review.</p>
+                <div class="hero-actions">
+                    <a href="#scan-box" class="btn btn-primary">Run Demo Assessment</a>
+                    <a href="{{ url_for('scan.dashboard') }}" class="btn btn-secondary">Open Dashboard</a>
+                </div>
+                {% if demo_mode %}<div class="alert alert-success inline-demo-alert"><strong>Demo Mode:</strong> Unlimited scans are enabled for showcase sessions.</div>{% endif %}
+                <div class="metrics-strip four-strip">
+                    <div class="metric-pill"><strong>5</strong><span>Demo targets</span></div>
+                    <div class="metric-pill"><strong>27+</strong><span>Seeded findings</span></div>
+                    <div class="metric-pill"><strong>PDF</strong><span>Executive export</span></div>
+                    <div class="metric-pill"><strong>SaaS</strong><span>Product-grade UI</span></div>
+                </div>
+            </div>
+            <div class="hero-panel landing-panel">
+                <div class="terminal-window">
+                    <div class="terminal-top"><span></span><span></span><span></span></div>
+                    <pre>$ workspace: aegis-labs
+$ target: https://admin.aegis-demo.local
+$ profile: guided demo mode
+$ findings: XSS, CSRF, Error Disclosure
+$ risk score: 43 / Critical
+$ report: executive PDF generated</pre>
+                </div>
+                <div class="stack-cards">
+                    <div class="mini-stat"><strong>Guided demo flow</strong><p>Pick a target from the dropdown, auto-fill the scan URL, and generate realistic results without manual typing.</p></div>
+                    <div class="mini-stat"><strong>CV-ready narrative</strong><p>Landing page, dashboard, findings, and reports all tell a product story you can talk through in interviews.</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="page feature-band">
+    <div class="container three-grid">
+        <article class="feature-card">
+            <span class="meta-label">01</span>
+            <h3>Choose a target fast</h3>
+            <p>Select from prebuilt demo properties like admin, API, shop, files, and portal surfaces. The dropdown updates the URL automatically.</p>
+        </article>
+        <article class="feature-card">
+            <span class="meta-label">02</span>
+            <h3>See polished results</h3>
+            <p>Every finding includes severity, business impact, confidence, and remediation guidance instead of raw developer-only output.</p>
+        </article>
+        <article class="feature-card">
+            <span class="meta-label">03</span>
+            <h3>Export the story</h3>
+            <p>Create executive-style PDF reports with risk score, severity overview, and structured remediation text for a recruiter-friendly demo.</p>
+        </article>
+    </div>
+</section>
+
+<section class="page">
+    <div class="container split-report landing-scan-layout">
+        <div id="scan-box" class="form-card">
+            <div class="section-head">
+                <span class="eyebrow">Assessment Console</span>
+                <h2>Launch a guided demo scan</h2>
+                <p>Use the quick selector for the seeded demo targets, or paste an authorized local target manually.</p>
+            </div>
+            <form action="{{ url_for('scan.start_scan') }}" method="post" class="stack-form">
+                <input type="hidden" name="csrf_token" value="demo_token_123">
+                <label for="demo_target">Demo target</label>
+                <select id="demo_target" name="demo_target">
+                    <option value="">Choose a demo property…</option>
+                    {% for item in demo_target_details %}
+                    <option value="{{ item.url }}" data-summary="{{ item.summary }}" data-risk="{{ item.risk }}">{{ item.name }} — {{ item.url }}</option>
+                    {% endfor %}
+                </select>
+                <div class="demo-target-note" id="demoTargetNote">Pick a demo target to auto-fill the target URL and show a quick description.</div>
+                <label for="target_url">Target URL</label>
+                <input id="target_url" type="url" name="target_url" placeholder="https://demo.aegisscan.local/portal or http://127.0.0.1:5000/vuln?q=test" required>
+                <div class="inline-actions">
+                    <button type="submit" class="btn btn-primary">Run Assessment</button>
+                    <a href="{{ url_for('scan.dashboard') }}" class="btn btn-secondary">See Metrics</a>
+                </div>
+            </form>
+            <div class="quick-target-grid">
+                {% for item in demo_target_details %}
+                <button type="button" class="target-card" data-target-url="{{ item.url }}" data-target-summary="{{ item.summary }} · {{ item.risk }} risk profile">
+                    <span class="target-title">{{ item.name }}</span>
+                    <small>{{ item.risk }} · {{ item.url }}</small>
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="pdf-preview landing-preview">
+            <div class="pdf-brand">AegisScan Cloud</div>
+            <div class="pdf-headline">What the demo showcases</div>
+            <div class="pdf-box">
+                <h4>1. Guided target selection</h4>
+                <p>No need to remember URLs. Use the dropdown or target cards to switch between admin, API, files, shop, and portal demos.</p>
+            </div>
+            <div class="pdf-box">
+                <h4>2. Product-grade dashboard</h4>
+                <p>Track scan trend, severity split, issue taxonomy, top targets, and recent assessments from one polished command center.</p>
+            </div>
+            <div class="pdf-box">
+                <h4>3. Executive PDF report</h4>
+                <p>Clean hierarchy, readable tables, risk score, remediation focus, and a report layout that feels closer to consulting deliverables.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="page">
+    <div class="container showcase-grid">
+        <div class="panel-card">
+            <div class="panel-head"><h3>Demo targets</h3><span class="pill">ready now</span></div>
+            <ul class="list-clean">
+                {% for item in demo_target_details %}
+                <li><span>{{ item.name }}</span><strong>{{ item.risk }}</strong></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="panel-card">
+            <div class="panel-head"><h3>Interview talking points</h3><span class="pill pill-cyan">portfolio angle</span></div>
+            <ul class="feature-list compact-list">
+                <li>Multi-page SaaS UI with coherent design language</li>
+                <li>Scan persistence with realistic seeded findings</li>
+                <li>Dashboard analytics rendered with custom charts</li>
+                <li>Executive PDF export path for reporting workflows</li>
+            </ul>
+        </div>
+    </div>
+</section>
+{% endblock %}

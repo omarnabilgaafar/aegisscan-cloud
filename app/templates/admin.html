@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel | AegisScan Cloud{% endblock %}
+{% block content %}
+<section class="page">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Platform governance</span>
+      <h1>Admin metrics surface</h1>
+      <p>High-level platform visibility across organizations, users, plans, and workspace activity.</p>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card"><span>Total Users</span><strong>{{ data.total_users }}</strong></div>
+      <div class="stat-card"><span>Organizations</span><strong>{{ data.total_organizations }}</strong></div>
+      <div class="stat-card"><span>Total Scans</span><strong>{{ data.total_scans }}</strong></div>
+      <div class="stat-card"><span>API Keys</span><strong>{{ data.total_api_keys }}</strong></div>
+    </div>
+    <div class="two-grid dashboard-grid">
+      <div class="panel-card">
+        <h3>Plan Distribution</h3>
+        <ul class="list-clean">
+          {% for plan, count in data.plan_distribution.items() %}
+          <li><span>{{ plan }}</span><strong>{{ count }}</strong></li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="panel-card">
+        <h3>Recent Organizations</h3>
+        <ul class="list-clean">
+          {% for org in data.organizations %}
+          <li><span>{{ org.name }}<small class="block-meta">{{ org.created_at }}</small></span><strong>{{ org.plan }}</strong></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    <div class="panel-card dashboard-grid">
+      <div class="panel-head"><h3>Recent Users</h3><span class="pill">latest 10</span></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Username</th><th>Email</th><th>Role</th><th>Plan</th><th>Created</th></tr></thead>
+          <tbody>
+            {% for user in data.users %}
+            <tr><td>{{ user.username }}</td><td>{{ user.email }}</td><td>{{ user.role }}</td><td>{{ user.plan }}</td><td>{{ user.created_at }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

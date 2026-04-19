@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Login | AegisScan Cloud{% endblock %}
+{% block content %}
+<section class="page auth-page">
+  <div class="container narrow">
+    <div class="auth-card">
+      <span class="eyebrow">Access workspace</span>
+      <h1>Log into your security console</h1>
+      <p class="subtitle">Continue into your black-and-purple command center for assessments, metrics, and reports.</p>
+      {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+      <form method="post" class="stack-form">
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" required>
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" required>
+        <button type="submit" class="btn btn-primary btn-wide">Login</button>
+      </form>
+      <p class="helper-text">Need an account? <a href="{{ url_for('auth.register') }}">Create a workspace</a></p>
+    </div>
+  </div>
+</section>
+{% endblock %}

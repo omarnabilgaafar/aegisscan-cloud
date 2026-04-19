@@ -1,0 +1,3 @@
+Check POST forms for CSRF token field
+Check SameSite cookie usage
+Check anti-CSRF framework support

@@ -1,0 +1,9 @@
+Flask==3.0.3
+requests==2.32.3
+beautifulsoup4==4.12.3
+python-dotenv==1.0.1
+pytest==8.3.2
+Werkzeug==3.0.3
+weasyprint
+reportlab
+gunicorn

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Scan Result | AegisScan Cloud{% endblock %}
+{% block content %}
+<section class="page">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Scan Output</span>
+      <h1>Assessment result</h1>
+      <p>Review the current findings and pivot into your saved report or dashboard.</p>
+    </div>
+    <div class="glass info-card">
+      <div class="info-grid">
+        <div><span class="meta-label">Target</span><strong>{{ result.target | e }}</strong></div>
+        <div><span class="meta-label">Total Findings</span><strong>{{ result.total }}</strong></div>
+        <div><span class="meta-label">Status</span><strong>{{ 'Failed' if result.error else 'Completed' }}</strong></div>
+        {% if not result.error %}<div><span class="meta-label">Risk Score</span><strong>{{ result.risk_score }} / {{ result.risk_band }}</strong></div>{% endif %}
+      </div>
+      {% if not result.error and result.scan_id %}
+      <div class="links-row">
+        <a class="btn btn-secondary" href="{{ url_for('report.view_report', scan_id=result.scan_id) }}">Open Full Report</a>
+        <a class="btn btn-ghost" href="{{ url_for('report.download_pdf', scan_id=result.scan_id) }}" target="_blank">Print PDF</a>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if result.error %}
+      <div class="alert alert-error">{{ result.error }}</div>
+    {% elif result.findings %}
+      <div class="cards-stack">
+      {% for item in result.findings %}
+        <article class="glass finding-card severity-{{ item.severity | lower }}">
+          <div class="finding-top">
+            <h3>{{ item.type }}</h3>
+            <span class="badge badge-{{ item.severity | lower }}">{{ item.severity }}</span>
+          </div>
+          <p><strong>URL:</strong> {{ item.url | e }}</p>
+          <p><strong>Description:</strong> {{ item.description | e }}</p>
+          <div class="detail-grid">
+            <div><span class="meta-label">Business Impact</span><strong>{{ item.business_impact }}</strong></div>
+            <div><span class="meta-label">Recommendation</span><strong>{{ item.recommendation }}</strong></div>
+            <div><span class="meta-label">Confidence</span><strong>{{ item.confidence }}</strong></div>
+          </div>
+        </article>
+      {% endfor %}
+      </div>
+    {% else %}
+      <div class="alert alert-success">No findings detected by the current checks.</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

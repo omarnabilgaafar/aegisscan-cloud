@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AegisScan PDF Report</title>
+<style>
+@page { size: A4; margin: 22mm 16mm 20mm 16mm; }
+body{font-family:Arial,sans-serif;color:#12231b;margin:0;background:#f4fbf8;font-size:12px;line-height:1.55;}
+.cover{padding:26px 28px;border-radius:22px;background:linear-gradient(135deg,#061018,#0d1720);color:#fff;margin-bottom:18px;border:1px solid rgba(0,255,156,0.18)}
+.brand{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:#a7ffe8;font-weight:700;}
+h1{margin:10px 0 8px;font-size:28px;line-height:1.1;}
+h2{font-size:16px;color:#0f5132;margin:0 0 10px;}
+p{margin:0 0 10px;color:#2f4b40;}
+.kpis{margin-top:16px;}
+.kpi{display:inline-block;vertical-align:top;width:30%;min-height:62px;padding:12px 14px;margin:8px 10px 0 0;border-radius:14px;background:rgba(255,255,255,.08);}
+.kpi strong{display:block;margin-bottom:6px;color:#d8fff1;font-size:10px;text-transform:uppercase;letter-spacing:.08em}
+.kpi span{font-size:14px;color:#fff;font-weight:700}
+.grid{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;margin-top:14px;}
+.section{margin-top:14px;}
+.card{background:#fff;border:1px solid rgba(15,81,50,.12);border-radius:16px;padding:14px 16px;}
+.card p{margin-bottom:0;}
+.risk-box{background:linear-gradient(180deg,#ffffff,#f3fbf8);border:1px solid rgba(15,81,50,.12);border-radius:16px;padding:16px;}
+.risk-score{font-size:30px;font-weight:800;color:#081018;margin-bottom:4px;}
+.risk-band{display:inline-block;padding:5px 10px;border-radius:999px;background:#ebfff5;color:#0f5132;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;}
+.snapshot-table,.table{width:100%;border-collapse:collapse;background:#fff;}
+.snapshot-table th,.snapshot-table td,.table th,.table td{border:1px solid rgba(7,26,20,.12);padding:9px;vertical-align:top;text-align:left;}
+.snapshot-table th,.table th{background:#ebfff5;color:#0f5132;text-transform:uppercase;font-size:10px;letter-spacing:.07em;}
+.table td{font-size:11px;}
+.badge{display:inline-block;padding:3px 8px;border-radius:999px;font-size:9px;font-weight:bold;color:#fff;text-transform:uppercase;letter-spacing:.06em;}
+.low{background:#64748b;} .medium{background:#d97706;} .high{background:#ea580c;} .critical{background:#dc2626;}
+ul{padding-left:18px;margin:0;}
+li{margin:0 0 6px;color:#2f4b40;}
+.footer{margin-top:20px;font-size:10px;color:#4b6359;text-align:center;border-top:1px solid rgba(15,81,50,.10);padding-top:10px;}
+.muted{color:#5d736a;font-size:10px;}
+</style>
+</head>
+<body>
+<div class="cover">
+  <div class="brand">AegisScan Cloud</div>
+  <h1>Executive Security Assessment Report</h1>
+  <p style="color:#e7fff7;max-width:560px;">A polished report for portfolio demos, recruiter review, and remediation planning. Built to make the risk story obvious at a glance.</p>
+  <div class="kpis">
+    <div class="kpi"><strong>Target</strong><span>{{ report.target_url }}</span></div>
+    <div class="kpi"><strong>Total Findings</strong><span>{{ report.total_findings }}</span></div>
+    <div class="kpi"><strong>Risk Score</strong><span>{{ risk_score }} / {{ risk_band }}</span></div>
+  </div>
+</div>
+
+<div class="grid section">
+  <div class="card">
+    <h2>1. Executive Summary</h2>
+    <p>This assessment detected a mix of exploitable flaws and weaker defensive controls. High-priority findings should be remediated first, especially any issue that could lead to account compromise, data exposure, or application takeover.</p>
+  </div>
+  <div class="risk-box">
+    <h2>Overall Risk</h2>
+    <div class="risk-score">{{ risk_score }}</div>
+    <div class="risk-band">{{ risk_band }}</div>
+    <p class="muted" style="margin-top:10px;">Risk score is weighted by severity and intended to make prioritization obvious for engineering teams.</p>
+  </div>
+</div>
+
+<div class="section card">
+  <h2>2. Severity Snapshot</h2>
+  <table class="snapshot-table">
+    <tr><th>Critical</th><th>High</th><th>Medium</th><th>Low</th></tr>
+    <tr><td>{{ severity_count.Critical }}</td><td>{{ severity_count.High }}</td><td>{{ severity_count.Medium }}</td><td>{{ severity_count.Low }}</td></tr>
+  </table>
+</div>
+
+<div class="grid section">
+  <div class="card">
+    <h2>3. Top Finding Categories</h2>
+    <ul>
+      {% for name, count in top_types %}
+      <li>{{ name }} — {{ count }}</li>
+      {% else %}
+      <li>No repeated categories detected.</li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="card">
+    <h2>4. Recommended Next Steps</h2>
+    <ul>
+      <li>Fix critical and high findings first.</li>
+      <li>Retest all affected endpoints after remediation.</li>
+      <li>Harden input validation and security headers.</li>
+      <li>Track closure in the engineering backlog.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section card">
+  <h2>5. Findings & Remediation</h2>
+  <table class="table">
+    <thead><tr><th>#</th><th>Finding</th><th>Severity</th><th>URL</th><th>Business Impact</th><th>Recommendation</th></tr></thead>
+    <tbody>
+      {% for item in findings %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td><strong>{{ item.vuln_type or item.type }}</strong><br><span class="muted">{{ item.description }}</span></td>
+        <td><span class="badge {{ item.severity|lower }}">{{ item.severity }}</span></td>
+        <td>{{ item.url }}</td>
+        <td>{{ item.business_impact }}</td>
+        <td>{{ item.recommendation }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="footer">Generated by AegisScan Cloud · Confidential · For authorized security testing only.</div>
+</body>
+</html>
