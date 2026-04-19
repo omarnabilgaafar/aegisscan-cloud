@@ -32,49 +32,49 @@ It is designed to **look and feel like a real security product**, not just a scr
 
 ### 🏠 Landing Page
 
-![Landing](MainPage.jpg)
+![Landing](README/MainPage.jpg)
 
 ---
 
 ### 🚀 Guided Demo Scan
 
-![Demo](LaunchAGuided%20DemoScan.jpg)
+![Demo](README/LaunchAGuided%20DemoScan.jpg)
 
 ---
 
 ### 📊 Dashboard
 
-![Dashboard](DashBoard.jpg)
+![Dashboard](README/DashBoard.jpg)
 
 ---
 
 ### 📈 Analytics Dashboard (Alt View)
 
-![Dashboard](dashboard.png)
+![Dashboard](README/dashboard.png)
 
 ---
 
 ### 🔍 Assessment Result
 
-![Assessment](Assessment%20result.jpg)
+![Assessment](README/Assessment%20result.jpg)
 
 ---
 
 ### 📄 Report View
 
-![Report](report.png)
+![Report](README/report.png)
 
 ---
 
 ### 🔐 Login Page
 
-![Login](LoginPage.png)
+![Login](README/LoginPage.png)
 
 ---
 
 ### 📝 Register Page
 
-![Register](RegisterPage.jpg)
+![Register](README/RegisterPage.jpg)
 
 ---
 
@@ -90,7 +90,7 @@ AegisScan generates **real-world, executive-style security reports** including:
 ### 📄 Sample Report
 
 👉 Download the real generated report:
-[📥 report_11.pdf](report_11.pdf)
+[📥 report_11.pdf](README/report_11.pdf)
 
 ---
 
