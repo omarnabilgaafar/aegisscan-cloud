@@ -31,8 +31,7 @@ It is designed to **look and feel like a real security product**, not just a scr
 ## 🖥️ Screenshots
 
 ### 🏠 Landing Page
-
-![Landing](MainPage.jpg)
+(MainPage.jpg)
 
 ---
 
