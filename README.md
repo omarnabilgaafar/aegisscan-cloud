@@ -131,8 +131,8 @@ AegisScan generates **real-world, executive-style security reports** including:
 ## ⚙️ Run Locally
 
 ```bash
-git clone https://github.com/your-username/aegisscan-cloud.git
-cd smart-web-vulnerability-scanner
+git clone https://github.com/omarnabilgaafar/aegisscan-cloud.git
+cd aegisscan-cloud
 
 docker compose up --build
 ```
