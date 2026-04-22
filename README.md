@@ -190,3 +190,7 @@ Cybersecurity Student
 ---
 
 ## ⭐ Support
+
+If you found this project useful, please consider starring the repository on GitHub.
+
+Your support helps highlight the project and encourages future improvements. Contributions, feedback, and suggestions are also welcome.
